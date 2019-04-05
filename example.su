@@ -1,0 +1,52 @@
+; Constantes
+.//screen-divide 1
+.//screen-mode   0
+.//screen-colors 16
+.//text-shift    49149
+
+; Iniciamos la GPU
+mov 49151 -> c
+mov /screen-colors -> [c]
+mov 49150 -> c
+mov /screen-mode -> a
+shl a    #4
+add a, /screen-divide
+mov a -> [c]
+mov 0 -> a
+mov 0 -> c
+nop      #32
+
+; Texto desplazandose
+movetext:
+mov /text-shift -> c
+mov [c] -> d
+mov b -> 0
+textloop:
+mov 65000 -> c
+add c, b
+mov [c] -> d
+mov /text-shift -> c
+mov [c] -> a
+mov a -> c
+add c, b
+mov d -> [c]
+add b, 1
+cmp b, 11
+beq movetext2
+jmp textloop
+movetext2:
+mov /text-shift -> c
+mov [c] -> a
+add a, 1
+mov a -> [c]
+jmp movetext
+
+textstring($65000):
+; Hacemos que toda la cadena de texto este en la direccion 65000(0xFDE8)
+dt "Hola mundo!"
+; Guardamos datos en bruto
+; Es lo mismo que:
+; dt 'H'
+; dt 'O'
+; ...
+; dt '!'
